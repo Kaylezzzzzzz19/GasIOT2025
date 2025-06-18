@@ -1,0 +1,4 @@
+../Core/Src/uart.c:5:6:UART1_Init	4	static
+../Core/Src/uart.c:24:6:UART1_SendChar	16	static
+../Core/Src/uart.c:29:6:UART1_SendString	16	static
+../Core/Src/uart.c:36:6:Send_Alert_ToESP	88	static

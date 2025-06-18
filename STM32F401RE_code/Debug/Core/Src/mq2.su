@@ -1,0 +1,6 @@
+../Core/Src/mq2.c:13:6:MQ2_Init	4	static
+../Core/Src/mq2.c:26:10:MQ2_ReadRaw	4	static
+../Core/Src/mq2.c:32:14:MQ2_Calculate_Rs	24	static
+../Core/Src/mq2.c:38:7:MQ2_Calibrate	16	static
+../Core/Src/mq2.c:48:7:MQ2_ReadRs	16	static
+../Core/Src/mq2.c:57:7:MQ2_Calculate_PPM	32	static

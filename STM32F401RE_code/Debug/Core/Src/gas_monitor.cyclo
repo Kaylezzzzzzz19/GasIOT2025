@@ -1,0 +1,2 @@
+../Core/Src/gas_monitor.c:8:17:GasMonitor_GetAlertLevel	4
+../Core/Src/gas_monitor.c:15:6:GasMonitor_UpdateState	6
