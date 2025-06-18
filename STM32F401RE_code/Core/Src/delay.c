@@ -13,7 +13,7 @@ void Delay_Init(void) {
 
 void SysTick_Handler(void)
 {
-    msTicks++; // Sửa lại đúng tên biến
+    msTicks++;
 }
 
 // Delay ms không bị trôi nhờ biến msTicks
