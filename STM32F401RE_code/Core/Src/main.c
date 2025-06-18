@@ -19,8 +19,7 @@ char buff[128];
 int main(void) {
     SystemState_t sysState = SYSTEM_RUNNING;
     float ppm = 0;
-    int stopped_shown = 0; // Đánh dấu đã cập nhật LCD khi vào STOPPED
-    int reset_request = 0; // Flag cho biết vừa reset xong
+    int prev_sysState = SYSTEM_RUNNING; // lưu trạng thái trước đó
 
     Delay_Init();
     MQ2_Init();
@@ -31,12 +30,12 @@ int main(void) {
     UART1_Init();
     Relay_Init();
 
-    // Thông báo hiệu chuẩn trên màn hình LCD
+    // Hiệu chuẩn cảm biến MQ2 trước khi vào vòng lặp chính
     LCD_Clear();
     LCD_SetCursor(0, 0);
-    LCD_Print("Dang hieu chuan");  // Hiển thị dòng 1: Đang hiệu chuẩn
+    LCD_Print("Dang hieu chuan");
     LCD_SetCursor(1, 0);
-    LCD_Print("Cam bien MQ-2..."); // Hiển thị dòng 2
+    LCD_Print("Cam bien MQ-2...");
 
     float ro = MQ2_Calibrate();
     int ro_int = (int)ro;
@@ -46,45 +45,38 @@ int main(void) {
     LCD_SetCursor(1, 0);
     snprintf(buff, sizeof(buff), "Ro=%d Ohm", ro_int);
     LCD_Print(buff);
-    Delay_ms(1500); // Đợi 1.5s để người dùng kịp đọc
-
+    Delay_ms(1500);
     LCD_Clear();
 
     while (1) {
-        // Chuyển đổi RUN/STOP khi nhấn SW1
+        // Xử lý chuyển đổi RUN/STOP
         if (sw1_flag) {
+            prev_sysState = sysState;
             sysState = (sysState == SYSTEM_RUNNING) ? SYSTEM_STOPPED : SYSTEM_RUNNING;
             sw1_flag = 0;
-            stopped_shown = 0;
+
+            // Nếu chuyển từ RUNNING sang STOPPED, cập nhật trạng thái lên LCD, giữ nguyên ppm cũ
+            if (prev_sysState == SYSTEM_RUNNING && sysState == SYSTEM_STOPPED) {
+                GasMonitor_UpdateState(sysState, ppm);
+            }
+            // Nếu chuyển từ STOPPED sang RUNNING, không cập nhật LCD tại đây (vòng lặp RUN sẽ update)
         }
 
-        // Xử lý RESET khi nhấn SW2: ppm = 0, báo SAFE
+        // Xử lý RESET: luôn về ppm=0, LCD báo "SAFE" (ppm=0), giữ nguyên trạng thái hệ thống
         if (sw2_flag) {
             ppm = 0.0f;
-            GasMonitor_UpdateState(sysState, ppm);
-            stopped_shown = 0;
-            reset_request = 1;
+            GasMonitor_UpdateState(sysState, ppm); // Hiển thị ppm=0, trạng thái safe
             sw2_flag = 0;
         }
 
         if (sysState == SYSTEM_RUNNING) {
-            if (reset_request) {
-                reset_request = 0;
-                Delay_ms(150);
-                continue;
-            }
-            stopped_shown = 0;
             uint16_t adc_raw = MQ2_ReadRaw();
             ppm = MQ2_Calculate_PPM(adc_raw);
             GasMonitor_UpdateState(sysState, ppm);
+            Delay_ms(100); // delay 100ms giữa các lần đọc
         } else {
-            // Nếu ở chế độ STOPPED, chỉ update LCD 1 lần
-            if (!stopped_shown || reset_request) {
-                GasMonitor_UpdateState(sysState, 0.0f); // Luôn báo SAFE khi STOPPED
-                stopped_shown = 1;
-                reset_request = 0;
-            }
+            // Ở STOPPED: Không cập nhật LCD liên tục, chỉ update khi chuyển trạng thái hoặc reset (xử lý ở trên)
+            Delay_ms(100);
         }
-        Delay_ms(100);
     }
 }
