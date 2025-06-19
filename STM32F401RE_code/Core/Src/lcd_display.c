@@ -24,7 +24,7 @@ void LCD_DisplayStatus(SystemState_t sysState, GasAlertLevel_t alertLevel, float
             case GAS_DANGEROUS:  alertStr = "DANGER";   break;
             default:             alertStr = "Safe";     break;
         }
-        sprintf(line2, "%s PPM: %d      ", alertStr, ppm_int); // Thêm khoảng trắng xóa ký tự thừa nếu có
+        sprintf(line2, "%-6s PPM:%4d", alertStr, ppm_int);
 
         LCD_SetCursor(0, 0);
         LCD_Print(line1);

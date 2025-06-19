@@ -5,7 +5,7 @@
 // LED Đỏ   : PA5
 // LED Vàng : PA6
 // LED Xanh Dương: PA7
-// LED Xanh Lá: PA8  (đã chuyển từ PA9 sang PA8)
+// LED Xanh Lá: PA8
 
 void LED_Init(void) {
     // Bật clock cho GPIOA

@@ -6,7 +6,7 @@
 #include "uart.h"
 
 GasAlertLevel_t GasMonitor_GetAlertLevel(float ppm) {
-    if (ppm < 100) return GAS_SAFE;
+    if (ppm < 50) return GAS_SAFE;
     else if (ppm < 300) return GAS_LOW;
     else if (ppm < 500) return GAS_HIGH;
     else return GAS_DANGEROUS;

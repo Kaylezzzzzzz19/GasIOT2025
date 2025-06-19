@@ -9,7 +9,7 @@ volatile int sw2_flag = 0;
 volatile uint32_t last_sw1_time = 0;
 volatile uint32_t last_sw2_time = 0;
 
-extern volatile uint32_t msTicks; // phải có biến này trong delay.c hoặc main.c
+extern volatile uint32_t msTicks;
 
 void Button_Init(void) {
     // Enable clock for GPIOB

@@ -3,7 +3,7 @@
 #include <math.h>
 #include "delay.h"
 
-#define MQ2_RL_VALUE        1000.0f      // Điện trở tải kΩ
+#define MQ2_RL_VALUE        1000.0f      // Điện trở tải Ω
 #define MQ2_RO_CLEAN_AIR    9.8f      // Hệ số Ro không khí sạch theo datasheet
 #define MQ2_PPM_A           574.25f
 #define MQ2_PPM_B           -2.222
@@ -37,11 +37,11 @@ static float MQ2_Calculate_Rs(uint16_t adc_val) {
 
 float MQ2_Calibrate(void) {
     float rs_sum = 0.0f;
-    for (int i = 0; i < 50; i++) {
+    for (int i = 0; i < 30; i++) {
         rs_sum += MQ2_Calculate_Rs(MQ2_ReadRaw());
         Delay_ms(200);
     }
-    MQ2_Ro = rs_sum / 50.0f / MQ2_RO_CLEAN_AIR;
+    MQ2_Ro = rs_sum / 30.0f / MQ2_RO_CLEAN_AIR;
     return MQ2_Ro;
 }
 
@@ -55,10 +55,12 @@ float MQ2_ReadRs(void) {
 }
 
 float MQ2_Calculate_PPM(uint16_t adc_val) {
-    if (MQ2_Ro < 0.01f) return 0.0f;
+    if (MQ2_Ro < 0.01f)
+    	return 0.0f;
     float rs = MQ2_Calculate_Rs(adc_val);
     float ratio = rs / MQ2_Ro;
-    if (ratio <= 0.0f) return 0.0f;
+    if (ratio <= 0.0f)
+    	return 0.0f;
     float ppm = MQ2_PPM_A * powf(ratio, MQ2_PPM_B);
     return (ppm < 0.0f) ? 0.0f : ppm;
 }
